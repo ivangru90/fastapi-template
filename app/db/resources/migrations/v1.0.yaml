@@ -1,0 +1,7 @@
+databaseChangeLog:
+#10/10/2021 sprint-1
+    - include:
+        file: changelog/migrations/v1.0/sprint_1/init-schema.sql
+    - include:
+        file: changelog/migrations/v1.0/sprint_1/insert_appuser.sql
+#24/09/2021 sprint-1

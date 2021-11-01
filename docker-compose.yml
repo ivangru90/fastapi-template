@@ -1,0 +1,97 @@
+version: '3'
+
+# Define the services that are going to be instantiated with docker-compose
+services:
+
+    # Defining restapi application
+    backend:
+        container_name: restapi
+
+        # Build docker image with fastapi application using Dockerfile on given path
+        build: .
+        restart: always
+
+        # Expose port 8080 to other containers (not to the host of the machine)
+        expose:
+            - "5000"
+            
+        # Expose port to host machine
+        ports:
+            - "5000:5000"
+ 
+        # Define on which containers this one is dependent
+        depends_on:
+            - liquibase
+
+        # Link the postgres containers together so that they can talk to one another
+        links:
+            - liquibase
+
+    # Defining database
+    postgres:
+        container_name: postgres
+    
+        # Use the postgres:latest image
+        image: postgres:latest
+        restart: always
+
+        # Mount an initialization scripts and the persistent postgresql data volume
+        # These scripts postgres execute in alphabetic order, be careful when set name of file
+        volumes:
+            - "dbdata:/var/lib/postgresql/data"
+
+        # Pass postgres environment variables
+        environment:
+            POSTGRES_USER: macaktom
+            POSTGRES_PASSWORD: volimdzerija
+            POSTGRES_DB: appdb
+
+        # Expose port 5432 to other docker containers
+        expose:
+            - "5432"
+            
+        # Expose database to host machine    
+        ports:
+            - "5432:5432" 
+     
+    # Defining liquibase database migration tool
+    liquibase:
+        container_name: liquibase
+        
+        # Define image to use
+        image: liquibase/liquibase
+        restart: on-failure
+        
+        # Define on which containers this one is dependent
+        depends_on:
+            - postgres
+           
+        # Link the postgres containers together so that they can talk to one another 
+        links:
+            - postgres
+        
+        # Expose port 5432 to other docker containers
+        expose:
+            - "5432"
+        
+        # Mount persistent liquibase volume    
+        volumes:
+            - ./app/db/resources/:/liquibase/changelog
+        
+        # Define command to execute liquibase update      
+        command: [ 
+          "liquibase", 
+          "--driver=org.postgresql.Driver",
+          "--url=jdbc:postgresql://postgres:5432/appdb",
+          "--changeLogFile=changelog/changelog-master.yaml",
+          "--username=macaktom",
+          "--password=volimdzerija",
+          "--contexts=dev",
+          "update"]
+            
+
+# Defining volumes, if something is cached with error remove these volumes too        
+volumes:
+    dbdata:
+    pgadmindata:
+    liquibasedata:
