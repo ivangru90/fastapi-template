@@ -2,6 +2,9 @@
 
 Here are requirements and installation steps for application API.
 
+## About
+
+This project use FAST API (https://fastapi.tiangolo.com/) to make REST service in Python. Here we have Postgres (https://www.postgresql.org/) database where Liquibase (https://www.liquibase.org/) take care of database migration. Everything is packed in Docker (https://www.docker.com/) to be independent of platform. There are two services one is just simple example and the other is authentication service.
 
 ## Project structure
 
@@ -38,8 +41,7 @@ Source coude is organized in next way:
 3. Open terminal and go to application folder
 4. Run start_app.bat -n 
 
-## Development
-
+## Development guide
 
 
 ## How to use application
